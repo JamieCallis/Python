@@ -24,6 +24,10 @@ class Posts extends Component {
     })
   }
 
+  componentDidMount() {
+    this.loadPosts()
+  }
+
   render() {
     return (
       <h1> Post component </h1>
