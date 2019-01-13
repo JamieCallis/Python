@@ -1,13 +1,22 @@
 import React, { Component } from 'react';
+import { BrowserRouter, Route, Redirect, Switch} from 'react-router-dom'
 import logo from './logo.svg';
 import './App.css';
 import Posts from './posts/posts.js';
+import PostDetail from './posts/PostDetail.js'
+import PostCreate from './posts/PostCreate.js'
 
 class App extends Component {
   render() {
     return (
-      <Posts/>
-
+      <BrowserRouter>
+        <Switch>
+        <Route exact path='/posts/create' component={PostCreate}/>
+          <Route exact path='/posts' component={Posts}/>
+          <Route exact path='/posts/:slug' component={PostDetail}/>
+          <Route component={Posts}/>
+        </Switch>
+      </BrowserRouter>
     );
   }
 }
