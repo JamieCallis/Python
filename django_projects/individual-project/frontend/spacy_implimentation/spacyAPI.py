@@ -1,6 +1,6 @@
 import spacy
 
-nlp = spacy.load('en')
+
 
 class SpacyAPI(object):
     nlp = None
@@ -9,7 +9,7 @@ class SpacyAPI(object):
     # constructor
     def __init__(self):
         # create a English module that can be used throughout the class.
-        self.nlp = nlp
+        self.nlp = spacy.load('en_core_web_sm')
 
     def createDoc(sentence):
         self.doc = self.nlp(setence)
