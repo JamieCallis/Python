@@ -1,0 +1,7 @@
+Virtual env with Python 2.7
+
+pip commands to be installed
+
+pip install bs4
+pip install future
+pip install nltk
