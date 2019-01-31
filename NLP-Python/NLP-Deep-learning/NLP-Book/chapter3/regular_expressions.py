@@ -243,8 +243,70 @@ grail = nltk.corpus.webtext.words('grail.txt')
 text = IndexedText(porter, grail)
 text.concordance('lie')
 
+# Lemmatization
+
+'''
+The WordNet lemmatizer removes affixes only if the
+resulting word is in its dictionary.
+
+This additional checking process makes the lemmatizer
+slower than the stemmers just mentioned.
+
+WorkNet lemmatizer is a good choice if you want to compile
+the vocaubulary of some texts and want a list of valid lemmas
+(or lexicon headwords)
+'''
+
+wnl = nltk.WordNetLemmatizer()
+print [wnl.lemmatize(t) for t in tokens]
 
 
+raw = """When I'M a Duchess, ' she said to herself,
+(not in a very hopeful tone though), 'I won't have any pepper
+in my kitchen AT ALL. Soup does very, well without--Maybe
+it's always pepper that makes people hot-tempered,' ..."""
+
+print re.split(r' ', raw)
+# matches one or more spaces, tabs or newlines.
+print re.split(r'[ \t\n]+', raw)
+
+# built-in re abbreviation \s. Which means any 
+# any whitespace chracters.
+
+print re.split(r'\s+', raw)  
+
+# python provides us we \w for word chracters = [a-zA-Z0-9_]
+print re.split(r'\W+', raw)
+# everything other than a word character
+
+'''
+    Sentence Segmentation
+
+    Tokenization is an instance of a more general
+    problem of 'segmentation'.
+
+    Manipulating texts at a the level of individual words
+    often presupposes the ability to divide a text into
+    individual sentneces.
+'''
+
+# average number of words pre sentnece
+
+print len(nltk.corpus.brown.words()) / len(nltk.corpus.brown.sents())
+
+from nltk.tokenize import sent_tokenize
+
+sent_tokenizer=nltk.data.load('tokenizers/punkt/english.pickle')
+text = nltk.corpus.gutenberg.raw('chesterton-thursday.txt')
+sents = sent_tokenizer.tokenize(text)
+print(sents[171:181])
+
+
+# string formatting expressions
+
+fdist = nltk.FreqDist(['dog', 'cat', 'dog', 'cat', 'dog', 'snake', 'dog', 'cat'])
+for word in fdist:
+    print '%s->%d;' % (word, fdist[word]),
 
 
 
