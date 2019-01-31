@@ -147,19 +147,101 @@ import nltk
 # We can also split the word into stem and suffix
 #print re.findall(r'^(.*?)(ing|ly|ed|ious|ies|ive|es|s|ment)$', 'processes')
 
-def stem(word):
-    regexp = r'^(.*?)(ing|ly|ed|ious|ies|ive|es|s|ment)?$'
-    stem, suffic = re.findall(regexp, word)[0]
-    return stem
+# def stem(word):
+#     regexp = r'^(.*?)(ing|ly|ed|ious|ies|ive|es|s|ment)?$'
+#     stem, suffix = re.findall(regexp, word)[0]
+#     return stem
 
-raw = """DENNIS: Listen, strange women lying in pond distributing swords
-is no basis for a system of government. Supreme executive power derives from a
-mandate from the masses, not from some farcial aquatic ceremony."""
+# raw = """DENNIS: Listen, strange women lying in pond distributing swords
+# is no basis for a system of government. Supreme executive power derives from a
+# mandate from the masses, not from some farcial aquatic ceremony."""
 
-tokens = nltk.word_tokenize(raw)
-print [stem(t) for t in tokens]
+# tokens = nltk.word_tokenize(raw)
+# print [stem(t) for t in tokens]
 
 # page 121 - searching tokenized Text
+
+'''
+    Special kinjds of regualr expression for searchign across
+    multiple words in a text.
+
+    e.g. <a> <man> finds all instances of 'a man' in the text.
+
+    The <> mark token boundaries, and any whitespace between
+    the angle brackets is ignored.
+'''
+
+from nltk.corpus import gutenberg, nps_chat
+
+mody = nltk.Text(gutenberg.words('melville-moby_dick.txt'))
+print mody.findall(r"<a> (<.*>) <man>")
+
+chat = nltk.Text(nps_chat.words())
+print chat.findall(r"<.*> <.*> <bro>")
+
+print chat.findall(r"<l. *> {3,}")
+
+'''
+    Using this method of searching blocks of texts
+    we can begin to build out own taxonomy of objects. 
+    But the data will contain some false positives.
+'''
+
+from nltk.corpus import brown
+hobbies_learned = nltk.Text(brown.words(categories=['hobbies', 'learned']))
+print hobbies_learned.findall(r"<\w*> <and> <other> <\w*s>")
+print hobbies_learned.findall(r"<as> <.*> <as> <.*>")
+
+# Normalizing Text
+
+'''
+    Strip off any affixes, a task known as stemming. 
+    A further step is to make sure that the resulting
+    form is a known word ina  dictionary, a task known as 
+    lemmatization.
+'''
+
+raw = """DENNIS: Listen, strange women lying in ponds distributing
+swords is no basis for a system of government. Supreme executive power
+derives from a mandate from the masses, not from some farcical aquatic cermony."""
+from nltk.tokenize import word_tokenize
+tokens = nltk.word_tokenize(raw)
+
+# stemmers
+# NLTK includes serveral off-the-shelf stemmers.
+
+porter = nltk.PorterStemmer()
+lancaster = nltk.LancasterStemmer()
+print [porter.stem(t) for t in tokens]
+print [lancaster.stem(t) for t in tokens]
+
+# stemming is not a well-defined process, 
+# and we typically pick the stemmer that best suits
+# the application we have in mind.
+
+class IndexedText(object):
+    def __init__(self, stemmer, text):
+        self.text = text
+        self._stemmer = stemmer
+        self._index = nltk.Index((self._stem(word), i) for (i, word) in enumerate(text))
+
+    def concordance(self, word, width=40):
+        key = self._stem(word)
+        wc = width/4 # words of context
+        for i in self._index[key]:
+            lcontext = ' '.join(self.text[i-wc:i])
+            rcontext = ' '.join(self.text[i:i+wc])
+            ldisplay = '%*s' % (width, lcontext[-width:])
+            rdisplay = '%-*s' % (width, rcontext[:width])
+            print ldisplay, rdisplay
+        
+    def _stem(self, word):
+        return self._stemmer.stem(word).lower()
+
+porter = nltk.PorterStemmer()
+grail = nltk.corpus.webtext.words('grail.txt')
+text = IndexedText(porter, grail)
+text.concordance('lie')
 
 
 
