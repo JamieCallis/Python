@@ -9,8 +9,10 @@ from rest_framework import serializers
     that can be easily rendered into other content types.
 '''
 class SpacySerializer(serializers.Serializer):
-    def setDocument(instance, sentence):
-        instance.createDoc(sentence)
+    
+    def setDocument(self, instance, sentence):
+        self.sentence = sentence
+        instance.createDoc(self.sentence)
 
-    def getExplaination(instance):
+    def getExplaination(self, instance):
         instance.explainDoc()
