@@ -9,7 +9,17 @@ from rest_framework import serializers
     that can be easily rendered into other content types.
 '''
 class SpacySerializer(serializers.Serializer):
-    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        context = kwargs.get('context', None)
+
+        if context:
+            request = kwargs['context']['request']
+
+    def getSentence(self):
+        return self.context['request']['message']
+
     def setDocument(self, instance, sentence):
         self.sentence = sentence
         instance.createDoc(self.sentence)

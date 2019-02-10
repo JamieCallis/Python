@@ -12,9 +12,13 @@ class SpacyAPI(object):
 
     def createDoc(self,sentence):
         self.doc = self.nlp(sentence)
-        print (self.doc)
+        return self.doc
     # how can we adapt this so it can return a suitible type.
     def explainDoc(self):
-        for word in self.doc:
-            print(word.text, word.tag_, spacy.explain(word.tag_))
+        ItemList = []
+        for word in self.doc.ents:
+            newDict = dict(word=word.text, explained=word.label_)
+            ItemList.append(newDict)
+        
+        return ItemList
 
