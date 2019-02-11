@@ -64,14 +64,19 @@ class Connect(State, Transition):
         State.__init__(self, Context)
     
     def idle(self):
-
+        self.CurrentContext.setState("IDEL")
+        return True
     def connect(self):
-    
+        self.CurrentContext.setState("CONNECT")
+        return True
     def active(self):
-    
+        self.CurrentContext.setState("ACTIVE")
+        return True
     def open_sent(self):
         # send open command via existing connection
-        # and transition to open sent state
+        # and transition to open sent 
+        self.CurrentContext.setState("OPENSENT")
+        return True
 
     def trigger(self):
         # display address of the connecting system
@@ -119,11 +124,15 @@ class OpenSent(State, Transition):
         State.__init__(self, Context)
     
     def idle(self):
-
+        self.CurrentContext.setState("IDLE")
+        return True
     def active(self):
-
+        self.CurrentContext.setState("ACTIVE")
+        return True
     def open_confirm(self):
         # when open command received, transition to open confirm state
+        self.CurrentContext.SETsTATE("OPENCONFIRM")
+        return True
 
     def trigger(self):
         # display address of system open command was sent to and
@@ -142,11 +151,14 @@ class OpenConfirm(State, Transition):
         State.__init__(self, Context)
     
     def idle(self):
-
+        self.CurrentContext.setState("IDLE")
+        return True
     def open_confirm(self):
-    
+        # state stays the same as OPENCONFIRM
+        return True
     def established(self):
         # send and receive keepalive messages
+        self.CurrentContext.setState("ESTABLISHED")
     
     def trigger(self):
         # trigger established method
@@ -160,17 +172,27 @@ class Established(State, Transition):
     '''
     def __init__(self, Context):
         State.__init__(self, Context)
-    
+        
     def idle(self):
-
+        self.CurrentContext.setState("IDLE")
+        return True
     def established(self):
-    
+        # state stays the same
+        return True
     def trigger(self):
         # terminate demo by transitioning to idle
 
 class BGPPeer(StateContext, Transition):
     def __init__(self):
-    
+        # add the available states
+        self.availableStates["IDLE"] = Idle(self)
+        self.availableStates["CONNECT"] = Connect(self)
+        self.availableStates["ACTIVE"] = Active(self)
+        self.availableStates["OPENSENT"] = OpenSent(self)
+        self.availableStates["OPENCONFIRM"] = OpenConfirm(self)
+        self.availableStates["ESTABLISHED"] = Established(self)
+        self.setState("IDLE")
+        
     def idle(self):
         return self.CurrentState.idle()
     

@@ -243,6 +243,12 @@ grail = nltk.corpus.webtext.words('grail.txt')
 text = IndexedText(porter, grail)
 text.concordance('lie')
 
+# Lemmatization
+
+'''
+
+'''
+
 
 
 
