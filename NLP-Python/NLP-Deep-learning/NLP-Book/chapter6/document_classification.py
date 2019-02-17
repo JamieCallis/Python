@@ -4,14 +4,14 @@ from nltk.corpus import movie_reviews
 from nltk.corpus import brown
 
 # building dataset
-documents = [(list(movie_reviews.words(fileid)), category)
-            for category in movie_reviews.categories()
-            for fileid in movie_reviews.fileids(category)]
-random.shuffle(documents)
+# documents = [(list(movie_reviews.words(fileid)), category)
+#             for category in movie_reviews.categories()
+#             for fileid in movie_reviews.fileids(category)]
+# random.shuffle(documents)
 
 # building the feature extractor
-all_words = nltk.FreqDist(w.lower() for w in movie_reviews.words())
-word_features = list(all_words)[:2000]
+# all_words = nltk.FreqDist(w.lower() for w in movie_reviews.words())
+# word_features = list(all_words)[:2000]
 
 '''
     The reason that we compute teh set of all words in a document in,
@@ -39,18 +39,32 @@ def document_features(documents):
 # training a classifier to work out which suffixes are most
 # informative.
 
-suffix_fdist = nltk.FreqDist()
+# suffix_fdist = nltk.FreqDist()
 
-for word in brown.words():
-    word = word.lower()
-    suffix_fdist[word[-1:]] += 1
-    suffix_fdist[word[-2:]] += 1
-    suffix_fdist[word[-3:]] += 1
+# for word in brown.words():
+#     word = word.lower()
+#     suffix_fdist[word[-1:]] += 1
+#     suffix_fdist[word[-2:]] += 1
+#     suffix_fdist[word[-3:]] += 1
 
-common_suffixes = [suffix for (suffix, count) in suffix_fdist.most_common(100)]
+# common_suffixes = [suffix for (suffix, count) in suffix_fdist.most_common(100)]
+
+'''
+    A part-of-speech classifier whose feature dector examines the context
+    in which a word appears in order to determine which part of speech
+    tag should be assigned. In particular, the identiy of the previous
+    word is included as a feature.
+
+    Sequence classification strategy, known as 'consecutive classification'
+    or 'greedy sequence classification'.
+
+    Makes use of a history arguement looking to the left of a word,
+    which has already been tagged. Such creating colloation between
+    words.
+'''
 
 
-def pos_features(sentence, i):
+def pos_features(sentence, i, history):
     features = {
         "suffix(1)": sentence[i][-1:],
         "suffix(2)": sentence[i][-2:],
@@ -58,23 +72,36 @@ def pos_features(sentence, i):
     }
     if i == 0:
         features["prev-word"] = "<START>"
+        features["prev-tag"] = "<START>"
     else:
         features["prev-word"] = sentence[i-1]
+        features["prev-tag"] = history[i-1]
     return features
 
-pos_features(brown.sents()[0], 8)
+class ConsecutivePosTagger(nltk.TaggerI):
+    def __init__(self, train_sents):
+        train_set = []
+        for tagged_sent in train_sents:
+            untagged_sent = nltk.tag.untag(tagged_sent)
+            history = []
+            for i, (word, tag) in enumerate(tagged_sent):
+                featureset = pos_features(untagged_sent, i, history)
+                train_set.append((featureset, tag))
+                history.append(tag)
+        self.classifier = nltk.NaiveBayesClassifier.train(train_set)
+    
+    def tag(self, sentence):
+        history = []
+        for i, word in enumerate(sentence):
+            freatureset = pos_features(sentence, i, history)
+            tag = self.classifier.classify(freatureset)
+            history.append(tag)
+        return zip(sentence, history)
+
 
 tagged_sents = brown.tagged_sents(categories='news')
-featuresets = []
+size = int(len(tagged_sents) * 0.1)
 
-for tagged_sent in tagged_sents:
-    untagged_sent = nltk.tag.untag(tagged_sent)
-    for i, (word, tag) in enumerate(tagged_sent):
-        featuresets.append((pos_features(untagged_sent, i), tag))
-
-size = int(len(featuresets) * 0.1)
-print size
-train_set, test_set = featuresets[size:], featuresets[:size]
-
-classifier = nltk.NaiveBayesClassifier.train(train_set)
-print nltk.classify.accuracy(classifier, test_set)
+train_sents, test_sents = tagged_sents[size:], tagged_sents[:size]
+tagger = ConsecutivePosTagger(train_sents)
+print tagger.evaluate(test_sents)
