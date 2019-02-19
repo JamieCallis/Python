@@ -60,7 +60,7 @@ class Idle(State, Transition):
         # Close the open Socket
         if(self.CurrentContext.server):
             self.CurrentContext.connection.close()
-            #self.idle()
+            self.idle()
             return True
         else:
             #self.CurrentContext.connection.close()
