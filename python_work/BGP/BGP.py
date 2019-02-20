@@ -41,16 +41,16 @@ class Idle(State, Transition):
         # only called when operating as a server - this is handled by main
         # initiate listening process
         # and transition to connect state when connection made
-        print "Currently in Idle state, transition to connect state"
         self.CurrentContext.listen()
+        print "Currently in Idle state, transition to connect state"
         self.CurrentContext.setState("CONNECT")
 
     def connect(self):
         # only called when operating as a client
         # initiate connection process
         # and transition to connect state when connection made
-        print "Currently in Idle state, transition to connect state"
         self.CurrentContext.make_connection()
+        print "Currently in Idle state, transition to connect state"
         self.CurrentContext.setState("CONNECT")
     
     def trigger(self):
@@ -59,13 +59,10 @@ class Idle(State, Transition):
         
         # Close the open Socket
         if(self.CurrentContext.server):
+            print "closing the server connction"
             self.CurrentContext.connection.close()
-            self.idle()
-            return True
-        else:
-            #self.CurrentContext.connection.close()
-            #self.CurrentContext.setState("IDLE")
-            return True
+      
+        return True
 
 
 class Connect(State, Transition):
@@ -93,18 +90,31 @@ class Connect(State, Transition):
         self.CurrentContext.setState("ACTIVE")
         return True
     def open_sent(self):
-        # send open command via existing connection
+        
+        if (self.CurrentContext.server):
+            # server is calling the open_sent
+            # send open command via existing connection
+            self.CurrentContext.connection.send("OPEN")
+            # transition to open sent
+            self.CurrentContext.setState("OPENSENT")
+        elif(not self.CurrentContext.server):
+            # client
+            message = self.CurrentContext.s.recv(1024)
+            print message
+            if message == "OPEN":
+                self.CurrentContext.setState("OPENSENT")
         print "Currently in connect state, transition to open sent state"
-        # and transition to open sent 
-        self.CurrentContext.setState("OPENSENT")
+
+
         return True
 
     def trigger(self):
         # display address of the connecting system
-        print "Connection from: " + str(self.CurrentContext.addr)
+        if(self.CurrentContext.server):
+            print "Connection from: " + str(self.CurrentContext.addr)
         # and trigger open_sent method
         self.open_sent()
-        
+        return True
 
 class Active(State, Transition):
     '''
@@ -222,6 +232,7 @@ class Established(State, Transition):
 class BGPPeer(StateContext, Transition):
     connection = None
     addr = None
+    s = None
     # True = server, False = client
     server = None
     def __init__(self):
@@ -270,8 +281,8 @@ class BGPPeer(StateContext, Transition):
         ''' this method initiates an outbound connection '''
         print "making a connection"
         self.server = False
-        s = socket.socket()
-        s.connect((self.host, self.port))
+        self.s = socket.socket()
+        self.s.connect((self.host, self.port))
         
 if __name__ == '__main__':
     if len(argv) < 2:
