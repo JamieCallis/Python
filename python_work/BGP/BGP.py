@@ -44,6 +44,7 @@ class Idle(State, Transition):
         self.CurrentContext.listen()
         print "Currently in Idle state, transition to connect state"
         self.CurrentContext.setState("CONNECT")
+        return True
 
     def connect(self):
         # only called when operating as a client
@@ -52,16 +53,27 @@ class Idle(State, Transition):
         self.CurrentContext.make_connection()
         print "Currently in Idle state, transition to connect state"
         self.CurrentContext.setState("CONNECT")
+        return True
     
     def trigger(self):
         # close open socket and reset object
         # return true if succeed. False otherwise
-        
-        # Close the open Socket
-        if(self.CurrentContext.server):
-            print "closing the server connction"
-            self.CurrentContext.connection.close()
-      
+        try: # server
+            if(self.CurrentContext.connection != None):
+                print "closing down the connection to client from server"
+                self.CurrentContext.connection.close()
+                self.CurrentContext.s.close()
+                # resetting the object
+                self.CurrentContext.connect = None
+                self.CurrentContext.s = None
+            elif(self.CurrentContext.s != None and self.CurrentContext.connection == None):
+                print "closing down the socket for the client"
+                self.CurrentContext.s.close()
+                # resetting the object
+                self.CurrentContext.s = None
+                
+        except:  # client
+            print "Error"
         return True
 
 
@@ -90,30 +102,28 @@ class Connect(State, Transition):
         self.CurrentContext.setState("ACTIVE")
         return True
     def open_sent(self):
-        
-        if (self.CurrentContext.server):
-            # server is calling the open_sent
-            # send open command via existing connection
-            self.CurrentContext.connection.send("OPEN")
-            # transition to open sent
-            self.CurrentContext.setState("OPENSENT")
-        elif(not self.CurrentContext.server):
-            # client
-            message = self.CurrentContext.s.recv(1024)
-            print message
-            if message == "OPEN":
+        try: 
+            if(self.CurrentContext.connection == None and self.CurrentContext.s != None):
+                self.CurrentContext.s.send("OPEN")
+                print "Sending the open message."
+                print "Currently in connect state, transition to open sent state" 
+                self.CurrentContext.setState("OPENSENT")   
+            else:
+                print "server is transition to openSent"
                 self.CurrentContext.setState("OPENSENT")
-        print "Currently in connect state, transition to open sent state"
-
-
+        except: 
+            print "error"
         return True
 
     def trigger(self):
         # display address of the connecting system
-        if(self.CurrentContext.server):
-            print "Connection from: " + str(self.CurrentContext.addr)
-        # and trigger open_sent method
-        self.open_sent()
+        try: 
+            if(self.CurrentContext.connection != None):
+                print "Connection from: " + str(self.CurrentContext.addr)
+            self.open_sent()
+        except: 
+            print "error"
+
         return True
 
 class Active(State, Transition):
@@ -166,16 +176,35 @@ class OpenSent(State, Transition):
         self.CurrentContext.setState("ACTIVE")
         return True
     def open_confirm(self):
-        print "Currently in opensent, transition to open_confirm"
         # when open command received, transition to open confirm state
-        self.CurrentContext.setState("OPENCONFIRM")
+        try:
+            if(self.CurrentContext.connection != None):
+                command = self.CurrentContext.connection.recv(1024)
+                print "The command is: ", command
+                if command == "OPEN":
+                    print "Currently in open Sent, transition to open Confirm"
+                    print "Sending keepalive message to client"
+                    self.CurrentContext.connection.send("KEEPALIVE")
+                    self.CurrentContext.setState("OPENCONFIRM")
+                    return True
+            else:
+                print "Currently in open Sent, transition to open Confirm"
+                self.CurrentContext.setState("OPENCONFIRM")
+        except:
+            pass  
+            return True
         return True
 
     def trigger(self):
         # display address of system open command was sent to and
-
+        try: # client
+            if(not self.CurrentContext.connection):
+                print "Adress open message being sent too: ", self.CurrentContext.host
+        except: #server
+            pass
         # trigger open_confirm method
         self.open_confirm()
+        return True
 
 class OpenConfirm(State, Transition):
     '''
@@ -199,13 +228,26 @@ class OpenConfirm(State, Transition):
         self.CurrentContext.setState("OPENCONFIRM")
         return True
     def established(self):
-        print "Currently in open confirm, transition to ESTABLISHED state"
+       
         # send and receive keepalive messages
-        self.CurrentContext.setState("ESTABLISHED")
-    
+        try: # client
+            if(self.CurrentContext.connection == None):
+                command = self.CurrentContext.s.recv(1024)
+                print command
+                if(command == "KEEPALIVE"):
+                    print "Currently in open confirm, transition to ESTABLISHED state"
+                    self.CurrentContext.setState("ESTABLISHED")
+            else:
+                print "Transition from open confirm, to ESTABLISHED state"
+                self.CurrentContext.setState("ESTABLISHED")
+        except: # server
+            pass
+            
+        return True
     def trigger(self):
         # trigger established method
         self.established()
+        return True
 
 class Established(State, Transition):
     '''
@@ -228,13 +270,13 @@ class Established(State, Transition):
     def trigger(self):
         # terminate demo by transitioning to idle
         self.idle()
+        return True
 
 class BGPPeer(StateContext, Transition):
     connection = None
     addr = None
     s = None
     # True = server, False = client
-    server = None
     def __init__(self):
         # add the available states
         self.availableStates["IDLE"] = Idle(self)
@@ -268,19 +310,17 @@ class BGPPeer(StateContext, Transition):
     def listen(self):
         ''' this method initiates a listen socket '''
         # server
-        self.server = True
-        s = socket.socket()
-        s.bind((self.host, self.port))
-        s.listen(1)
+        self.s = socket.socket()
+        self.s.bind((self.host, self.port))
+        self.s.listen(1)
         print "waiting for a connection"
         # connection acceptance
-        self.connection, self.addr = s.accept() 
+        self.connection, self.addr = self.s.accept() 
 
     def make_connection(self):
         # client
         ''' this method initiates an outbound connection '''
         print "making a connection"
-        self.server = False
         self.s = socket.socket()
         self.s.connect((self.host, self.port))
         
