@@ -1,40 +1,9 @@
-server sends information via the connection, whereas
-client sends information via the socket s.
+ring up doctors book an appointment for my toe
+01443 404444
+appointment with nurse monday at 11:15-11:30am
+Gum clinic times to get jab done
+029 2033 5208
+Wednesday 10am-11:30am - Walk in repeat vaccine and bloods
+Thursday 4:30-6pm - Walk in repeat caccine and bloods
 
-server waiting for data
-
-while True:
-data = connection.recv(1024) #1024 bytes
-
-print the data to the console, 
-
-connection.send("reply")
-
-client waiting for data
-# seralises and prepares the data
-message = raw_input("")
-
-while True
-# recieving
-s.recv(2014)
-# sending
-s.send(message)
-
-server is listening for a connection,
-transitions from Idle to Connect state
-
-Client then connects to the server,
-and transitions to the connect state
-
-both are in connect state - server upon reciving the
-connect, should reply with Open to client and 
-transiton to OpenSent.
-
-When the server and client transition to connect state
-the trigger in connect state is called.
-
-This then calls open_sent 
-
-we can to send a open message via the open_sent for the server.
-Then recieve it via the client and transition both to open_sent
-
+Sort out credentials for Luke so he can sort out AWS.
