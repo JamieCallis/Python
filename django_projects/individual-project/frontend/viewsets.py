@@ -21,16 +21,16 @@ import io
 class SpacyViewSet(viewsets.ViewSet):
     # Create an instance to be used.
 
-    @action(detail=False, methods=['POST'], name="query")
+    @action(detail=False, methods=['POST'], name="query", description="Serializes the data, and returns a processed result")
     def query(self, request, *args, pk=None):
         spacyAPI = SpacyAPI()
         spacySerializer = SpacySerializer(args, context={"request": request.data})
         spacyAPI.createDoc(spacySerializer.getSentence())
 
-        return Response({"success": True, "Data": spacyAPI.explainDoc()})
+        return Response({"success": True, "result": spacyAPI.explainDoc()})
 
 
-    @action(detail=False, name="query-result")
+    @action(detail=False, name="queryresult")
     def queryResult(self, request, pk=None):
         return Response({"success": True, "Content": "working"})
 

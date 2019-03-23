@@ -3,5 +3,5 @@ from frontend.viewsets import SpacyViewSet
 
 router = routers.DefaultRouter()
 
-router.register(r'spacy-api', SpacyViewSet, base_name='spacy-api')
+router.register(r'spacyapi', SpacyViewSet, base_name='spacyapi')
 

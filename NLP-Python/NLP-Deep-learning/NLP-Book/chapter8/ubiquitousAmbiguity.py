@@ -59,7 +59,7 @@ for tree in rd_parser.parse(sent):
     hand side.
 
     E.g. NP -> 'New York' is disallowed 
-         NP ->New_York'   is allowed
+         NP -> 'New_York'   is allowed
 '''
 
 # recursion in Syntactic structures

@@ -14,7 +14,7 @@ from nltk.corpus import brown
 # word_features = list(all_words)[:2000]
 
 '''
-    The reason that we compute teh set of all words in a document in,
+    The reason that we compute the set of all words in a document in,
     rather than just checking if word in document, is that checking
     whether a word occurs in a set is much faster than checking whether it
     occurs in a list.

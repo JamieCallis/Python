@@ -16,8 +16,8 @@ class SpacyAPI(object):
     # how can we adapt this so it can return a suitible type.
     def explainDoc(self):
         ItemList = []
-        for word in self.doc.ents:
-            newDict = dict(word=word.text, explained=word.label_)
+        for token in self.doc:
+            newDict = dict(word=token.text, pos=token.pos_,pos_responsing=spacy.explain(token.pos_))
             ItemList.append(newDict)
         
         return ItemList
