@@ -21,44 +21,40 @@ class StateContext:
         return self.stateIndex
 
 class Transition:
-    def closed(self):
-        print "Error can't transition to closed!"
+     def passive_open(self):
+        print "Error!"
         return False
 
-    def listen(self):
-        print "Error can't transition to listen!"
+    def syn(self):
+        print "Error!"
         return False
 
-    def synSent(self):
-        print "Error can't transition to synSent!"
-        return False
-    
-    def synRecvd(self):
-        print "Error can't transition to synRecvd!"
+    def ack(self):
+        print "Error!"
         return False
 
-    def established(self):
-        print "Error can't transition to established!"
-        return False
-    
-    def closeWait(self):
-        print "Error can't transition to closeWait!"
+    def rst(self):
+        print "Error!"
         return False
 
-    def finWait_1(self):
-        print "Error can't transition to finwait_1!"
-        return False
-    
-    def finWait_2(self):
-        print "Error can't transition to finwait_2!"
+    def syn_ack(self):
+        print "Error!"
         return False
 
-    def lastAck(self):
-        print "Error can't transition to lastAck!"
+    def close(self):
+        print "Error!"
         return False
 
-    def timedWait(self):
-        print "Error can't transition to timedWait!"
+    def fin(self):
+        print "Error!"
+        return False
+
+    def timeout(self):
+        print "Error!"
+        return False
+
+    def active_open(self):
+        print "Error!"
         return False
 
 
@@ -66,74 +62,86 @@ class Closed(State, Transition):
     def __init__(self, Context):
         State.__init__(self, Context)
 
-    def closed(self):
-        pass
-
-    def synSent(self):
-        # if active open
-        # then send syn request, and transition to synSent.
-        pass
+    def close(self):
+        # attempt to close the connection, and resets the object
+        try:
+          self.CurrentContext.socket.close()
+          self.CurrentContext.connection_address = 0
+        except:
+          pass
+        return True
     
-    def listen(self):
-        # listen for a command and transition to the listen state.
-        pass
+    def passive_open(self): # server
+        self.CurrentContext.listen()
+        print "Tranisition to the listen state"
+        self.CurrentContext.setState("LISTEN")
+        return True
+
+    def active_open(self): # client
+        self.CurrentContext.make_connection()
+        self.CurrentContext.socket.send("SYN")
+        self.CurrentContext.setState("SYNSENT")
+        return True
 
     def Trigger(self):
-        pass
+        self.CurrentContext.close()
+        return True
 
 
-class Listen(State, Transition):
+class Listen(State, Transition): # serrver
     def __init__(self, Context):
         State.__init__(self, Context)
 
-    def synRecvd(self):
-        pass
-       
+    def syn(Self):
+      self.CurrentContext.command = self.CurrentContext.connection.recv(1024)
+      if self.CurrentContext.command == "SYN":
+          self.CurrentContext.connection.send("SYNACK")
+          self.CurrentState.setState("SYNRECVD")
+      return True
+    
     def Trigger(self):
-        pass
+      # do we need a try and catch here
+      # should we be doing the recv in the trigger
+      self.CurrentContext.syn()
+      return True
+        
 
 class SynRecvd(State, Transition):
     def __init__(self, Context):
         State.__init__(self, Context)
 
-    def established(self):
-        pass
-
     def Trigger(self):
-        pass
 
-class SynSent(State, Transition):
+        return True
+
+class SynSent(State, Transition): # server
     def __init__(self, Context):
         State.__init__(self, Context)
-
-    def closed(self):
-        pass
-
-    def established(self):
-        pass
     
+    def syn_ack(self):
+        # send an ack and transition to established state
+        # check that SYNACK has been receieved. 
+    
+    def rst(self):
+        self.CurrentState.setState("CLOSED")
+        return True
+
+    def timeout(self):
+      pass
+
     def Trigger(self):
         pass
 
 class Established(State, Transition):
     def __init__(self, Context):
         State.__init__(self, Context)
-    
-    def closeWait(self):
-        pass
-
-    def finWait_1(self):
-        pass
-
+  
     def Trigger(self):
         pass
 
 class FinWait_1(State, Transition):
     def __init__(self, Context):
         State.__init__(self, Context)
-
-    def finWait_2(self):
-        pass
 
     def Trigger(self):
         pass
@@ -142,18 +150,12 @@ class FinWait_2(State, Transition):
     def __init__(self, Context):
         State.__init__(self, Context)
 
-    def timedWait(self):
-        pass
-
     def Trigger(self):
         pass
 
 class CloseWait(State, Transition):
     def __init__(self, Context):
         State.__init__(self, Context)
-
-    def lastAck(self):
-        pass
 
     def Trigger(self):
         pass
@@ -162,18 +164,12 @@ class LastAck(State, Transition):
     def __init__(self, Context):
         State.__init__(self, Context)
 
-    def closed(self):
-        pass
-
     def Trigger(self):
         pass
 
 class TimedWait(State, Transition):
     def __init__(self, Context):
         State.__init__(self, Context)
-
-    def closed(self):
-        pass
 
     def Trigger(self):
         pass
@@ -197,39 +193,36 @@ class TCPIPSimulator(StateContext, Transition):
         self.connection_addr = 0
         self.connection = None
         self.socket = None
+        self.command = None
         
+    def passive_open(self):
+      return self.CurrentState.passive_open() 
+   
+    def active_open(self):
+      return self.CurrentState.active_open()
+
+    def syn(self):
+      return self.CurrentState.syn()
     
-    def closed(self):
-        return self.CurrentState.closed()
+    def ack(self):
+      return self.CurrentState.ack()
+    
+    def rst(self):
+      return self.CurrentState.rst()
+    
+    def syn_ack(self):
+      return self.CurrentState.syn_ack()
+    
+    def close(self):
+      return self.CurrentState.close()
+    
+    def fin(self):
+      return self.CurrentState.fin()
+    
+    def timeout(self):
+      return self.CurrentState.timeout()
 
     def listen(self):
-        return self.CurrentState.listen()
-
-    def synRecvd(self):
-        return self.CurrentState.synRecvd()
-
-    def synSent(self):
-        return self.CurrentState.synSent()
-    
-    def established(self):
-        return self.CurrentState.established()
-    
-    def finWait_1(self):
-        return self.CurrentState.finWait_1()
-    
-    def finWait_2(self):
-        return self.CurrentState.finWait_2()
-    
-    def closeWait(self):
-        return self.CurrentState.closeWait()
-    
-    def lastAck(self):
-        return self.CurrentState.lastAck()
-
-    def timedWait(self):
-        return self.CurrentState.timedWait()
-
-    def listen_for_connection(self):
         ''' this method initiates a listen socket '''
         # server
         self.socket = socket.socket()
@@ -262,6 +255,9 @@ class TCPIPSimulator(StateContext, Transition):
         # called client_commands.txt that will be in the same directory
         pass
 
+    def encryption_decryption(self):
+        pass
+
 if __name__ == "__main__":
     if len(argv) < 2:
         print "Error: too few arguments"
@@ -269,6 +265,6 @@ if __name__ == "__main__":
 
     TCPIPSimulator = TCPIPSimulator()
     if argv[1] == "server":
-        TCPIPSimulator.listen()
+        TCPIPSimulator.passive_open()
     else:
-        pass
+        TCPIPSimulator.active_open()
