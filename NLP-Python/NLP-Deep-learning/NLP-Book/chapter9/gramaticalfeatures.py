@@ -99,6 +99,7 @@ grammar1 = nltk.CFG.fromstring("""
 # forces the NP and VP to take the same rule.
 # Since you have to have both as singular, or plural.
 # In the event that the rule isn't met the result will be an fail.
+
 grammar2 = nltk.CFG.fromstring("""
     S           ->  NP[NUM=?n]  VP[NUM=?n]
     NP[NUM=?n]  ->  Det[NUM=?n] N[NUM=?n]
@@ -124,7 +125,7 @@ grammar2 = nltk.CFG.fromstring("""
 
 '''
     In addition to atomic-valued features, features may
-    take values that a re themsleves feature structures.
+    take values that are themsleves feature structures.
 
     We can create groups of categories such as:-
 

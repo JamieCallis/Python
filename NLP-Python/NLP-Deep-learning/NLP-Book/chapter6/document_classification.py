@@ -14,11 +14,12 @@ from nltk.corpus import brown
 # word_features = list(all_words)[:2000]
 
 '''
-    The reason that we compute the set of all words in a document in,
-    rather than just checking if word in document, is that checking
+    The reason that we compute the set of all words in a document
+    rather than just checking if word is in the document, is that checking
     whether a word occurs in a set is much faster than checking whether it
     occurs in a list.
 '''
+# function to find all unique words in a document.
 def document_features(documents):
     document_words = set(documents)
     features = {}

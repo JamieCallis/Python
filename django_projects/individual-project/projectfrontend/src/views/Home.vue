@@ -3,8 +3,8 @@
     <!-- Sends the information to the search component-->
     <search @clicked="updateQueryResult"></search>
     <display
-     v-if="active" 
-     v-bind:queryResults="queryResult" 
+     v-if="active"
+     v-bind:queryResults="queryResult"
      v-bind:tableHeaders="tableHeaders"
      >
      </display>
@@ -33,7 +33,7 @@ export default {
   data () {
     return {
       queryResult: [],
-      tableHeaders:['word', 'part of speach', 'POS explanation'],
+      tableHeaders: ['word', 'part of speach', 'POS explanation'],
       active: false
     }
   },

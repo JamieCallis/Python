@@ -29,7 +29,7 @@ print(nltk.FeatStruct(NAME='Lee', TELNO='01 27 86 42 96', AGE=33))
 
     Directed acyclic graphs (DAGs)
 
-    Of which we would often thing of such graphs
+    Of which we would often think of such graphs
     in terms of paths through the graph. A feature path
     is a sequence of arcs that can be followed from the root node.
 
@@ -89,7 +89,7 @@ print fs1.unify(fs2)
     two feature sets together. 
 
     It create a Union between the two 
-    feature sets such as. 
+    feature sets such as.
 
     FS0 u FS1 = FS1 u FS0
 

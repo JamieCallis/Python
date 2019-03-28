@@ -41,7 +41,7 @@ print list(pos2.items())
     Specifies no parameters, so we call it using parentheses with no arguments
     thus, the definitions of f and g below are equivalent
 
-    f = lambda: 'NOUN
+    f = lambda: 'NOUN'
     f()
     def g():
         return NOUN

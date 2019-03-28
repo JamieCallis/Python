@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'frontend', # allows our project to access the app.
+    'backendapp', # allows our project to access the app.
     'corsheaders', # allows us to do Ajax requests Without we would run into errors.
     'rest_framework', # used to handle API requests, and seralization.
 ]

@@ -1,5 +1,5 @@
 from rest_framework import routers
-from frontend.viewsets import SpacyViewSet
+from backendapp.viewsets import SpacyViewSet
 
 router = routers.DefaultRouter()
 

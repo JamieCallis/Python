@@ -145,7 +145,7 @@ for tree in trees:
 # Valency and the Lexicon
 
 '''
-  The following is are known as completements
+  The following are known as completements
   of the respective verbs
 
   VP -> V Adj was
