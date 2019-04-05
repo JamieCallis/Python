@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-
+from .models import BookMetaData, BookText
+import json
 '''
     We make use of a seralizer from the rest_framework
     to allow us to transform the data into JSON or XML format.
@@ -8,6 +9,8 @@ from rest_framework import serializers
     Seralizer allows us to put data into native python datatypes,
     that can be easily rendered into other content types.
 '''
+
+
 class SpacySerializer(serializers.Serializer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -26,3 +29,18 @@ class SpacySerializer(serializers.Serializer):
 
     def getExplaination(self, instance):
         instance.explainDoc()
+
+
+class BookMetaDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BookMetaData
+        fields = '__all__'
+           
+class BookTextSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BookText
+        fields = '__all__'
+
+ 
+    
+    

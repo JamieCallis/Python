@@ -1,7 +1,5 @@
 import spacy
 
-
-
 class SpacyAPI(object):
     explainList = []
     # constructor
