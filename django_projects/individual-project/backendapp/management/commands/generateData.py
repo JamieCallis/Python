@@ -9,7 +9,7 @@ import json
 
 # as of writting this document 59012 is the last book in the gutenberg dataset. 
 def generateBooks(lastBookID):
-        firstBookID = 19107
+        firstBookID = 1
         # look through and grab each book
         while firstBookID <= lastBookID:
             # load and grab the eBook

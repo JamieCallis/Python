@@ -6,9 +6,6 @@ jest.mock('axios')
 describe('searchComponent', () => {
     // we are using a shallowMount over Mount the reason for this
     // is a shallowMount only uses the component not it's children components. 
-    
-    // we need to test if a method prints a the value from search box.
-    // we could do an initial test that on click on the search button it prints a statement to the console?
     it('does the data update when you input information into the input?', () => {
         const wrapper = shallowMount(search)
         const input = wrapper.find('input')
