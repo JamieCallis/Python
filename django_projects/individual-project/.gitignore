@@ -1,6 +1,6 @@
 /node_modules
 /gutenberg
 django_projects\db.sqlite3
-__pycache__/
+__pycache__\
 *.pyo
 *.pyc

@@ -1,3 +1,4 @@
 
 django_projects/individual-project/db.sqlite3
 django_projects/individual-project/db.sqlite3
+*.pyc
