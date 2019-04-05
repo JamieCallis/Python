@@ -1,6 +1,7 @@
 /node_modules
 django_projects/individual-project/db.sqlite3
-__pycache__\
+/__pycache__
+/migrations
 *.pyo
 *.pyc
 
