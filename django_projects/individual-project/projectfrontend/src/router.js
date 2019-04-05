@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
-
+import individualbook from './components/individualbook'
 Vue.use(Router)
 
 export default new Router({
@@ -10,6 +10,12 @@ export default new Router({
       path: '/',
       name: 'home',
       component: Home
+    },
+    {
+      path: '/book',
+      name: 'individualbook',
+      component: individualbook,
+      props: true
     }
     // {
     //   path: '/search',

@@ -4,21 +4,13 @@
 
 <template>
   <section class="display-container">
-    <table>
-      <thead>
-        <tr>
-          <th v-bind:key="index" v-for="(header, index) in tableHeaders">{{header}}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-bind:key="index" v-for="(token, index) in queryResults">
-          <td>{{token.word}}</td>
-          <td>{{token.pos}}</td>
-          <td>{{token.pos_responsing}}</td>
-        </tr>
-      </tbody>
-    </table>
-  </section>
+      <div class="book-card" v-bind:key="book.bookID" v-for="book in queryResults">
+        <router-link :to="{name: 'individualbook', params: book}">
+          {{book.title}}
+        </router-link>
+        <p>{{book.author}}</p>
+      </div>
+      </section>
 </template>
 
 <script>
@@ -29,10 +21,7 @@ export default {
       type: Array,
       required: true
     },
-    tableHeaders: {
-      type: Array,
-      required: true
-    }
+    
   }
 }
 </script>
