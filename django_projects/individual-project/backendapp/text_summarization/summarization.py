@@ -69,7 +69,7 @@ class Summarization(object):
 
     def summarise(self):
         # Look at the top 10 sentences and produce a concatinated summary.
-        summary_sentences = heapq.nlargest(10, self.sentence_scores, key=self.sentence_scores.get)
+        summary_sentences = heapq.nlargest(20, self.sentence_scores, key=self.sentence_scores.get)
         summary = ' '.join(summary_sentences)
         self.textSummary = summary
         
