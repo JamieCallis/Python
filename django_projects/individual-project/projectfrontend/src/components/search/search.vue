@@ -19,8 +19,11 @@ export default {
   data () {
     return {
       query: '',
-      queryResult: []
-    }
+      queryResult: [],
+      search_term: ''
+    },
+  mounted: function () {
+
   },
   methods: {
     async searchQuery () {
