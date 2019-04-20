@@ -53,7 +53,7 @@ There are just over 59000 books in reality around 5000-10000 would be sufficent 
 Route to 'projectfrontend' and run 'npm install' this will generate all
 the required node modules.
 
-Running the frontend and backend
+#### Running the frontend and backend
 
 frontend: ```npm run serve```
 backend: ```python manage.py runserver```
