@@ -16,9 +16,8 @@ Also to note this project runs using Python 3 and Django 2 and heigher.
 
 ### Installiation instructions
 
-Step 1: Cloning the project can be done using the following command
+Step 1: Clone the project
 
-[insert command]
 
 #### Stage 2: Virtual Enviroment
 
@@ -31,7 +30,8 @@ mkvirtualenv enviromentname
 pip install spacy
 pip install djago
 pip install django-rest-framework
-pip install cors-header```
+pip install cors-header
+```
 
 #### Stage 3: Set up the database
 
